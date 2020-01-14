@@ -3,7 +3,8 @@ const express = require("express");
 const app = express();
 // создаем парсер для данных в формате json
 const jsonParser = express.json();
-  
+//порт
+const PORT = process.env.PORT||80;
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: false }));
 /*app.use(function (req, res, next) {
@@ -73,4 +74,6 @@ app.get('/', function(req, res) {
 }); 
 	
 
-app.listen(3000);
+app.listen(PORT,()=>{
+	console.log('Server has been started...');
+});
