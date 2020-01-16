@@ -37,7 +37,8 @@ app.get('/', function(req, res) {
 	//GOOGLESHEETS
 	const GoogleSpreadsheet = require('google-spreadsheet');
 	const {promisify} = require('util');
-
+	email='maemail="'+req.query.email+'"';
+	console.log(email);
 	function PrepareRows(rows){//packs rows to dataProvider to send to site to the chart
 		arr=[];
 		rows.forEach((row)=>{
@@ -62,10 +63,12 @@ app.get('/', function(req, res) {
 		const rows = await promisify(sheet.getRows)({
 			offset: 1,
 			limit:200,
-			orderby:'sended'
+			orderby:'sended',
+			query:email
 		});
-		res.jsonp(PrepareRows(rows));
 		//console.log(rows);
+		res.jsonp(PrepareRows(rows));
+		
 	}
 
 	acessSpreadSheet();
