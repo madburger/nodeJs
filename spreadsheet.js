@@ -46,10 +46,10 @@ app.get('/', function(req, res) {
 				simplecount:row.simplecount,
 				consciouscount:row.consciouscount,
 				unconsciouscount:row.unconsciouscount,
-				sended:row.sended
-				mentalcondition:row.mentalcondition;
-				physicalstate:row.physicalstate;
-				location:row.location;
+				sended:row.sended,
+				mentalcondition:row.mentalcondition,
+				physicalstate:row.physicalstate,
+				location:row.location
 			});
 		});
 		return arr;
