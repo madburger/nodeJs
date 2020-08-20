@@ -57,7 +57,7 @@ app.get('/', function(req, res) {
 
 	const creds = require('./secret.json');
 	async function acessSpreadSheet(){
-		const doc = new GoogleSpreadsheet('1yBfEmVrj3Zm1rAIk1Wb-RwEEG827V54rimpG11eT3gQ');
+		const doc = new GoogleSpreadsheet('1OmbdPVOWX6CB1iWM4LVL7gzsvbGC6y9vNjgXns0RBJQ');
 		await promisify(doc.useServiceAccountAuth)(creds);
 		const info = await promisify(doc.getInfo)();
 		const sheet = info.worksheets[0];
