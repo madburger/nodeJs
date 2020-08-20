@@ -4,7 +4,7 @@ const app = express();
 // создаем парсер для данных в формате json
 const jsonParser = express.json();
 //порт
-const PORT = process.env.PORT||80;
+const PORT = process.env.PORT || 80;
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: false }));
 /*app.use(function (req, res, next) {
@@ -30,57 +30,64 @@ app.post('/', function(req, res) {
   res.jsonp({lolkek:'yougay'});
 });
 */
-app.get('/', function(req, res) {
+app.get("/", function (req, res) {
+  console.log(req.query);
 
-	console.log(req.query);
-  
-	//GOOGLESHEETS
-	const GoogleSpreadsheet = require('google-spreadsheet');
-	const {promisify} = require('util');
-	email='maemail="'+req.query.email+'"';
-	console.log(email);
-	function PrepareRows(rows){//packs rows to dataProvider to send to site to the chart
-		arr=[];
-		rows.forEach((row)=>{
-			arr.push({
-				simplecount:row.simplecount,
-				consciouscount:row.consciouscount,
-				unconsciouscount:row.unconsciouscount,
-				sended:row.sended,
-				mentalcondition:row.mentalcondition,
-				physicalstate:row.physicalstate,
-				location:row.location
-			});
-		});
-		return arr;
-	}
+  //GOOGLESHEETS
+  const GoogleSpreadsheet = require("google-spreadsheet");
+  const { promisify } = require("util");
+  email = 'maemail="' + req.query.email + '"';
+  console.log(email);
+  function PrepareRows(rows) {
+    //packs rows to dataProvider to send to site to the chart
+    arr = [];
+    rows.forEach((row) => {
+      arr.push({
+        simplecount: row.simplecount,
+        consciouscount: row.consciouscount,
+        unconsciouscount: row.unconsciouscount,
+        sended: row.sended,
+        mentalcondition: row.mentalcondition,
+        physicalstate: row.physicalstate,
+        location: row.location,
+      });
+    });
+    return arr;
+  }
 
-	const creds = require('./secret.json');
-	async function acessSpreadSheet(){
-		const doc = new GoogleSpreadsheet('1YMQrjLICbMuUWeArVjCK8l3Nzz3vi-tU1cLs8OmWFDs');
-		await promisify(doc.useServiceAccountAuth)(creds);
-		const info = await promisify(doc.getInfo)();
-		const sheet = info.worksheets[0];
+  const creds = require("./secret.json");
+  async function acessSpreadSheet() {
+    const doc = new GoogleSpreadsheet(
+      "1YMQrjLICbMuUWeArVjCK8l3Nzz3vi-tU1cLs8OmWFDs"
+    );
+    console.log(1);
+    await promisify(doc.useServiceAccountAuth)(creds);
+    console.log(2);
+    const info = await promisify(doc.getInfo)().catch((err) => {
+      res.send(err);
+      return;
+    });
+    const sheet = info.worksheets[0];
+    console.log(3);
+    //console.log(`Title: ${sheet.title} , Rows: ${sheet.rowCount}`);
+    const rows = await promisify(sheet.getRows)({
+      offset: 1,
+      limit: 200,
+      orderby: "sended",
+      query: email,
+    }).catch((err) => {
+      res.send(err);
+      return;
+    });
+    //console.log(rows);
+    console.log(4);
+    res.jsonp(PrepareRows(rows));
+  }
 
-		//console.log(`Title: ${sheet.title} , Rows: ${sheet.rowCount}`);
-		const rows = await promisify(sheet.getRows)({
-			offset: 1,
-			limit:200,
-			orderby:'sended',
-			query:email
-		});
-		//console.log(rows);
-		res.jsonp(PrepareRows(rows));
-		
-	}
-
-	acessSpreadSheet();
-	//ENDGOOGLESHEETS
-	
-}); 
-	
-
-app.listen(PORT,()=>{
-	console.log('Server has been started...');
+  acessSpreadSheet();
+  //ENDGOOGLESHEETS
 });
 
+app.listen(PORT, () => {
+  console.log("Server has been started...");
+});
